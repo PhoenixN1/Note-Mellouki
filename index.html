@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plateforme d'Évaluation - Notez et Partagez vos Avis</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            overflow-x: hidden;
+        }
+
+        body.light {
+            background-color: #f6f8fa;
+            color: #111111;
+        }
+
+        body.dark {
+            background-color: #0f172a;
+            color: #f1f5f9;
+        }
+
+        header {
+            padding: 20px 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .light header {
+            background-color: rgba(255, 255, 255, 0.9);
+            border-bottom: 1px solid rgba(229, 231, 235, 0.5);
+        }
+
+        .dark header {
+            background-color: rgba(30, 41, 59, 0.9);
+            border-bottom: 1px solid rgba(51, 65, 85, 0.5);
+        }
+
+        header.scrolled {
+            padding: 15px 5%;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 24px;
+            font-weight: 700;
+            animation: slideInRight 0.6s ease;
+        }
+
+        .light .logo {
+            color: #2563eb;
+        }
+
+        .dark .logo {
+            color: #3b82f6;
+        }
+
+        nav {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+            animation: slideInLeft 0.6s ease;
+        }
+
+        nav a {
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .light nav a {
+            color: #6b7280;
+        }
+
+        .dark nav a {
+            color: #94a3b8;
+        }
+
+        nav a:hover {
+            transform: translateY(-2px);
+        }
+
+        .light nav a:hover {
+            color: #2563eb;
+        }
+
+        .dark nav a:hover {
+            color: #3b82f6;
+        }
+
+        nav a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            transition: width 0.3s ease;
+        }
+
+        .light nav a::after {
+            background-color: #2563eb;
+        }
+
+        .dark nav a::after {
+            background-color: #3b82f6;
+        }
+
+        nav a:hover::after {
+            width: 100%;
+        }
+
+        .theme-toggle {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .light .theme-toggle {
+            color: #111111;
+            background-color: #f6f8fa;
+        }
+
+        .dark .theme-toggle {
+            color: #f1f5f9;
+            background-color: #0f172a;
+        }
+
+        .theme-toggle:hover {
+            transform: rotate(180deg) scale(1.1);
+        }
+
+        .hero {
+            padding: 150px 5% 100px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://images.unsplash.com/photo-1557821552-17105176677c?w=1920&h=1080&fit=crop') center/cover;
+            z-index: 0;
+        }
+
+        .light .hero::before {
+            opacity: 0.1;
+        }
+
+        .dark .hero::before {
+            opacity: 0.05;
+        }
+
+        .hero::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        .light .hero::after {
+            background: linear-gradient(135deg, rgba(37, 99, 235, 0.05) 0%, rgba(29, 78, 216, 0.05) 100%);
+        }
+
+        .dark .hero::after {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(37, 99, 235, 0.1) 100%);
+        }
+
+        .hero-content {
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero h1 {
+            font-size: 56px;
+            font-weight: 800;
+            margin-bottom: 20px;
+            animation: fadeInUp 0.8s ease;
+            line-height: 1.2;
+        }
+
+        .light .hero h1 {
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .dark .hero h1 {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            font-size: 20px;
+            margin-bottom: 40px;
+            animation: fadeInUp 0.8s ease 0.2s backwards;
+        }
+
+        .light .hero p {
+            color: #6b7280;
+        }
+
+        .dark .hero p {
+            color: #94a3b8;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            animation: fadeInUp 0.8s ease 0.4s backwards;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 16px 32px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-primary {
+            color: #ffffff;
+            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+        }
+
+        .light .btn-primary {
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+        }
+
+        .dark .btn-primary {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(37, 99, 235, 0.4);
+        }
+
+        .btn-secondary {
+            border: 2px solid;
+        }
+
+        .light .btn-secondary {
+            background-color: #ffffff;
+            border-color: #2563eb;
+            color: #2563eb;
+        }
+
+        .dark .btn-secondary {
+            background-color: #1e293b;
+            border-color: #3b82f6;
+            color: #3b82f6;
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-3px);
+        }
+
+        .light .btn-secondary:hover {
+            background-color: #2563eb;
+            color: #ffffff;
+        }
+
+        .dark .btn-secondary:hover {
+            background-color: #3b82f6;
+            color: #ffffff;
+        }
+
+        .floating-icons {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .float-icon {
+            position: absolute;
+            font-size: 40px;
+            animation: float 3s ease-in-out infinite;
+            opacity: 0.6;
+        }
+
+        .light .float-icon {
+            color: #2563eb;
+        }
+
+        .dark .float-icon {
+            color: #3b82f6;
+        }
+
+        .float-icon:nth-child(1) { top: 20%; left: 10%; animation-delay: 0s; }
+        .float-icon:nth-child(2) { top: 60%; left: 20%; animation-delay: 1s; }
+        .float-icon:nth-child(3) { top: 40%; right: 15%; animation-delay: 0.5s; }
+        .float-icon:nth-child(4) { top: 70%; right: 10%; animation-delay: 1.5s; }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
+
+        .stats {
+            padding: 80px 5%;
+            text-align: center;
+            position: relative;
+        }
+
+        .stats::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1920&h=600&fit=crop') center/cover;
+            z-index: 0;
+        }
+
+        .light .stats::before {
+            opacity: 0.05;
+        }
+
+        .dark .stats::before {
+            opacity: 0.03;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 40px;
+            max-width: 1000px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .stat-item {
+            animation: fadeInUp 0.8s ease backwards;
+        }
+
+        .stat-item:nth-child(1) { animation-delay: 0.1s; }
+        .stat-item:nth-child(2) { animation-delay: 0.2s; }
+        .stat-item:nth-child(3) { animation-delay: 0.3s; }
+        .stat-item:nth-child(4) { animation-delay: 0.4s; }
+
+        .stat-number {
+            font-size: 48px;
+            font-weight: 800;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .light .stat-number {
+            color: #2563eb;
+        }
+
+        .dark .stat-number {
+            color: #3b82f6;
+        }
+
+        .stat-label {
+            font-size: 16px;
+        }
+
+        .light .stat-label {
+            color: #6b7280;
+        }
+
+        .dark .stat-label {
+            color: #94a3b8;
+        }
+
+        .features {
+            padding: 80px 5%;
+            position: relative;
+        }
+
+        .features::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1920&h=1080&fit=crop') center/cover;
+            z-index: 0;
+        }
+
+        .light .features::before {
+            opacity: 0.03;
+        }
+
+        .dark .features::before {
+            opacity: 0.02;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 42px;
+            font-weight: 700;
+            margin-bottom: 60px;
+            animation: fadeInUp 0.8s ease;
+            position: relative;
+            z-index: 1;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .feature-card {
+            padding: 40px;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+            animation: fadeInUp 0.8s ease backwards;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .light .feature-card {
+            background-color: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        }
+
+        .dark .feature-card {
+            background-color: rgba(30, 41, 59, 0.95);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .feature-card:nth-child(1) { animation-delay: 0.1s; }
+        .feature-card:nth-child(2) { animation-delay: 0.2s; }
+        .feature-card:nth-child(3) { animation-delay: 0.3s; }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+        }
+
+        .light .feature-card:hover {
+            box-shadow: 0 12px 40px rgba(37, 99, 235, 0.2);
+        }
+
+        .dark .feature-card:hover {
+            box-shadow: 0 12px 40px rgba(59, 130, 246, 0.3);
+        }
+
+        .feature-icon {
+            font-size: 48px;
+            margin-bottom: 20px;
+            display: inline-block;
+            animation: bounce 2s ease infinite;
+        }
+
+        .light .feature-icon {
+            color: #2563eb;
+        }
+
+        .dark .feature-icon {
+            color: #3b82f6;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .feature-card:hover .feature-icon {
+            animation: spin 0.6s ease;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .feature-card h3 {
+            font-size: 24px;
+            margin-bottom: 15px;
+        }
+
+        .feature-card p {
+            line-height: 1.6;
+        }
+
+        .light .feature-card p {
+            color: #6b7280;
+        }
+
+        .dark .feature-card p {
+            color: #94a3b8;
+        }
+
+        .cta-section {
+            padding: 80px 5%;
+            text-align: center;
+        }
+
+        .cta-card {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 60px 40px;
+            border-radius: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1600&h=900&fit=crop') center/cover;
+            z-index: 0;
+        }
+
+        .light .cta-card::before {
+            opacity: 0.15;
+        }
+
+        .dark .cta-card::before {
+            opacity: 0.1;
+        }
+
+        .cta-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        .light .cta-card::after {
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+        }
+
+        .dark .cta-card::after {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+        }
+
+        .cta-card > * {
+            position: relative;
+            z-index: 2;
+        }
+
+        .cta-card h2 {
+            color: #ffffff;
+            font-size: 36px;
+            margin-bottom: 20px;
+        }
+
+        .cta-card p {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 18px;
+            margin-bottom: 30px;
+        }
+
+        .cta-card .btn {
+            background-color: #ffffff;
+        }
+
+        .light .cta-card .btn {
+            color: #2563eb;
+        }
+
+        .dark .cta-card .btn {
+            color: #3b82f6;
+        }
+
+        footer {
+            padding: 40px 5%;
+            text-align: center;
+            border-top: 1px solid;
+        }
+
+        .light footer {
+            border-color: #e5e7eb;
+        }
+
+        .dark footer {
+            border-color: #334155;
+        }
+
+        .light footer p {
+            color: #6b7280;
+        }
+
+        .dark footer p {
+            color: #94a3b8;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 36px;
+            }
+
+            .hero p {
+                font-size: 16px;
+            }
+
+            nav {
+                gap: 15px;
+            }
+
+            .section-title {
+                font-size: 32px;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .cta-card {
+                padding: 40px 20px;
+            }
+
+            .cta-card h2 {
+                font-size: 28px;
+            }
+        }
+    </style>
+</head>
+<body class="light">
+    <header id="header">
+        <div class="logo">
+            <i class="fas fa-star"></i>
+            <span>Plateforme d'Évaluation</span>
+        </div>
+        <nav>
+            <a href="#home">Accueil</a>
+            <a href="#features">Fonctionnalités</a>
+            <a href="#about">À Propos</a>
+            <a href="login.html" class="btn btn-primary" style="padding: 10px 20px;">
+                <i class="fas fa-sign-in-alt"></i>
+                Connexion
+            </a>
+            <button class="theme-toggle" onclick="toggleTheme()" aria-label="Changer le thème">
+                <i class="fas fa-sun"></i>
+            </button>
+        </nav>
+    </header>
+
+    <section class="hero" id="home">
+        <div class="floating-icons">
+            <i class="fas fa-star float-icon"></i>
+            <i class="fas fa-heart float-icon"></i>
+            <i class="fas fa-thumbs-up float-icon"></i>
+            <i class="fas fa-comment float-icon"></i>
+        </div>
+        <div class="hero-content">
+            <h1>Notez Tout, Partagez Votre Avis</h1>
+            <p>Une plateforme complète pour évaluer les produits, services et expériences. Rejoignez notre communauté et partagez vos opinions avec des millions d'utilisateurs</p>
+            <div class="cta-buttons">
+                <a href="login.html" class="btn btn-primary">
+                    <i class="fas fa-rocket"></i>
+                    Commencer Gratuitement
+                </a>
+                <a href="#features" class="btn btn-secondary">
+                    <i class="fas fa-compass"></i>
+                    Découvrir Plus
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <section class="stats">
+        <div class="stats-grid">
+            <div class="stat-item">
+                <span class="stat-number" data-target="50000">0</span>
+                <span class="stat-label"><i class="fas fa-users"></i> Utilisateurs Actifs</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number" data-target="200000">0</span>
+                <span class="stat-label"><i class="fas fa-star"></i> Évaluations Publiées</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number" data-target="15000">0</span>
+                <span class="stat-label"><i class="fas fa-box"></i> Produits Notés</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number" data-target="99">0</span>
+                <span class="stat-label"><i class="fas fa-smile"></i> % Satisfaction</span>
+            </div>
+        </div>
+    </section>
+
+    <section class="features" id="features">
+        <h2 class="section-title">Pourquoi Choisir Notre Plateforme ?</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <i class="fas fa-shield-alt feature-icon"></i>
+                <h3>Évaluations Fiables</h3>
+                <p>Nous garantissons l'authenticité de toutes les évaluations grâce à un système de vérification avancé et une communauté active qui surveille le contenu</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-bolt feature-icon"></i>
+                <h3>Rapide et Facile</h3>
+                <p>Une interface simple et rapide qui rend le processus d'évaluation et de recherche de produits facile et agréable</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-globe feature-icon"></i>
+                <h3>Communauté Mondiale</h3>
+                <p>Rejoignez des millions d'utilisateurs à travers le monde et profitez de leurs expériences et opinions sur différents produits</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="cta-section">
+        <div class="cta-card">
+            <h2>Prêt à Commencer ?</h2>
+            <p>Rejoignez-nous aujourd'hui et commencez à partager vos opinions et à profiter des expériences des autres</p>
+            <a href="login.html" class="btn">
+                <i class="fas fa-user-plus"></i>
+                Créer un Compte Gratuit
+            </a>
+        </div>
+    </section>
+
+    <footer>
+        <p><i class="fas fa-copyright"></i> 2025 Plateforme d'Évaluation. Tous droits réservés</p>
+    </footer>
+
+    <script>
+        function toggleTheme() {
+            document.body.classList.toggle('light');
+            document.body.classList.toggle('dark');
+            const icon = document.querySelector('.theme-toggle i');
+            if (document.body.classList.contains('dark')) {
+                icon.className = 'fas fa-moon';
+            } else {
+                icon.className = 'fas fa-sun';
+            }
+        }
+
+        window.addEventListener('scroll', () => {
+            const header = document.getElementById('header');
+            if (window.scrollY > 50) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+        });
+
+        function animateCounter(element) {
+            const target = parseInt(element.getAttribute('data-target'));
+            const duration = 2000;
+            const step = target / (duration / 16);
+            let current = 0;
+
+            const timer = setInterval(() => {
+                current += step;
+                if (current >= target) {
+                    element.textContent = target.toLocaleString('fr-FR');
+                    clearInterval(timer);
+                } else {
+                    element.textContent = Math.floor(current).toLocaleString('fr-FR');
+                }
+            }, 16);
+        }
+
+        const observerOptions = {
+            threshold: 0.5,
+            rootMargin: '0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const counters = entry.target.querySelectorAll('.stat-number');
+                    counters.forEach(counter => {
+                        if (counter.textContent === '0') {
+                            animateCounter(counter);
+                        }
+                    });
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        const statsSection = document.querySelector('.stats');
+        observer.observe(statsSection);
+
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
