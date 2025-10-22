@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connexion | Inscription</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.3s ease;
+            padding: 20px;
+            position: relative;
+            overflow: scroll;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://images.unsplash.com/photo-1557821552-17105176677c?w=1920&h=1080&fit=crop') center/cover;
+            z-index: 0;
+        }
+
+        body.light {
+            background-color: #f6f8fa;
+            color: #111111;
+        }
+
+        body.dark {
+            background-color: #0f172a;
+            color: #f1f5f9;
+        }
+
+        body.light::before {
+            opacity: 0.08;
+        }
+
+        body.dark::before {
+            opacity: 0.05;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 450px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .theme-toggle {
+            position: absolute;
+            top: -60px;
+            right: 0;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 10px;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            font-size: 20px;
+        }
+
+        .light .theme-toggle {
+            color: #111111;
+            background-color: #ffffff;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .dark .theme-toggle {
+            color: #f1f5f9;
+            background-color: #1e293b;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .theme-toggle:hover {
+            transform: rotate(180deg) scale(1.1);
+        }
+
+        .back-home {
+            position: absolute;
+            top: -60px;
+            left: 0;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .light .back-home {
+            color: #2563eb;
+            background-color: #ffffff;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .dark .back-home {
+            color: #3b82f6;
+            background-color: #1e293b;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .back-home:hover {
+            transform: translateX(-5px);
+        }
+
+        .card {
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .light .card {
+            background-color: rgba(255, 255, 255, 0.95);
+        }
+
+        .dark .card {
+            background-color: rgba(30, 41, 59, 0.95);
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo i {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+
+        .light .logo i {
+            color: #2563eb;
+        }
+
+        .dark .logo i {
+            color: #3b82f6;
+        }
+
+        .logo h1 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .light .logo h1 {
+            color: #2563eb;
+        }
+
+        .dark .logo h1 {
+            color: #3b82f6;
+        }
+
+        .logo p {
+            font-size: 14px;
+        }
+
+        .light .logo p {
+            color: #6b7280;
+        }
+
+        .dark .logo p {
+            color: #94a3b8;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            border-radius: 10px;
+            padding: 5px;
+        }
+
+        .light .tabs {
+            background-color: #f6f8fa;
+        }
+
+        .dark .tabs {
+            background-color: #0f172a;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .light .tab {
+            color: #6b7280;
+        }
+
+        .dark .tab {
+            color: #94a3b8;
+        }
+
+        .tab.active {
+            color: #ffffff;
+            transform: translateY(-2px);
+        }
+
+        .light .tab.active {
+            background-color: #2563eb;
+        }
+
+        .dark .tab.active {
+            background-color: #3b82f6;
+        }
+
+        .form-container {
+            display: none;
+        }
+
+        .form-container.active {
+            display: block;
+            animation: fadeIn 0.4s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-wrapper i {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 16px;
+        }
+
+        .light .input-wrapper i {
+            color: #6b7280;
+        }
+
+        .dark .input-wrapper i {
+            color: #94a3b8;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px 16px 12px 45px;
+            border-radius: 8px;
+            border: 2px solid;
+            font-size: 15px;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        .light input {
+            background-color: #f6f8fa;
+            border-color: #e5e7eb;
+            color: #111111;
+        }
+
+        .dark input {
+            background-color: #0f172a;
+            border-color: #334155;
+            color: #f1f5f9;
+        }
+
+        .light input:focus {
+            border-color: #2563eb;
+            background-color: #ffffff;
+        }
+
+        .dark input:focus {
+            border-color: #3b82f6;
+            background-color: #1e293b;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            color: #ffffff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .light .submit-btn {
+            background-color: #2563eb;
+        }
+
+        .dark .submit-btn {
+            background-color: #3b82f6;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(37, 99, 235, 0.3);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        .forgot-password {
+            text-align: right;
+            margin-top: 12px;
+            font-size: 13px;
+        }
+
+        .forgot-password a {
+            text-decoration: none;
+            font-weight: 600;
+            transition: opacity 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .light .forgot-password a {
+            color: #2563eb;
+        }
+
+        .dark .forgot-password a {
+            color: #3b82f6;
+        }
+
+        .forgot-password a:hover {
+            opacity: 0.8;
+        }
+
+
+
+
+
+
+        .message {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            display: none;
+            animation: slideDown 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message.success {
+            background-color: #d1fae5;
+            color: #065f46;
+            border: 2px solid #10b981;
+        }
+
+        .message.error {
+            background-color: #fee2e2;
+            color: #991b1b;
+            border: 2px solid #ef4444;
+        }
+
+        .dark .message.success {
+            background-color: #064e3b;
+            color: #d1fae5;
+        }
+
+        .dark .message.error {
+            background-color: #7f1d1d;
+            color: #fee2e2;
+        }
+
+        @media (max-width: 768px) {
+            .back-home, .theme-toggle {
+                top: -50px;
+            }
+
+            .card {
+                padding: 30px 20px;
+            }
+        }
+    </style>
+</head>
+<body class="light">
+    <div class="container">
+        <a href="index.html" class="back-home">
+            <i class="fas fa-arrow-left"></i>
+            Retour
+        </a>
+        <button class="theme-toggle" onclick="toggleTheme()" aria-label="Changer le thème">
+            <i class="fas fa-sun"></i>
+        </button>
+
+        <div class="card">
+            <div class="logo">
+                <i class="fas fa-star"></i>
+                <h1>Plateforme d'Évaluation</h1>
+                <p>Notez et partagez vos avis</p>
+            </div>
+
+            <div id="message" class="message"></div>
+
+            <div class="tabs">
+                <button class="tab active" onclick="switchTab('login')">
+                    <i class="fas fa-sign-in-alt"></i>
+                    Connexion
+                </button>
+                <button class="tab" onclick="switchTab('register')">
+                    <i class="fas fa-user-plus"></i>
+                    Inscription
+                </button>
+            </div>
+
+            <div id="login-form" class="form-container active">
+                <form onsubmit="handleLogin(event)">
+                    <div class="form-group">
+                        <label for="login-email">
+                            <i class="fas fa-envelope"></i>
+                            Adresse Email
+                        </label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-envelope"></i>
+                            <input type="email" id="login-email" placeholder="exemple@email.com" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="login-password">
+                            <i class="fas fa-lock"></i>
+                            Mot de Passe
+                        </label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-lock"></i>
+                            <input type="password" id="login-password" placeholder="••••••••" required>
+                        </div>
+                    </div>
+                    <div class="forgot-password">
+                        <a href="#" onclick="showMessage('Un lien de réinitialisation sera envoyé à votre email', 'success'); return false;">
+                            <i class="fas fa-key"></i>
+                            Mot de passe oublié ?
+                        </a>
+                    </div>
+                    <button type="submit" class="submit-btn">
+                        <i class="fas fa-sign-in-alt"></i>
+                        Se Connecter
+                    </button>
+                </form>
+
+
+            </div>
+
+            <div id="register-form" class="form-container">
+                <form onsubmit="handleRegister(event)">
+                    <div class="form-group">
+                        <label for="register-name">
+                            <i class="fas fa-user"></i>
+                            Nom Complet
+                        </label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-user"></i>
+                            <input type="text" id="register-name" placeholder="Jean Dupont" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="register-email">
+                            <i class="fas fa-envelope"></i>
+                            Adresse Email
+                        </label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-envelope"></i>
+                            <input type="email" id="register-email" placeholder="exemple@email.com" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="register-password">
+                            <i class="fas fa-lock"></i>
+                            Mot de Passe
+                        </label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-lock"></i>
+                            <input type="password" id="register-password" placeholder="••••••••" required minlength="6">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="register-confirm">
+                            <i class="fas fa-lock"></i>
+                            Confirmer le Mot de Passe
+                        </label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-lock"></i>
+                            <input type="password" id="register-confirm" placeholder="••••••••" required minlength="6">
+                        </div>
+                    </div>
+                    <button type="submit" class="submit-btn">
+                        <i class="fas fa-user-plus"></i>
+                        Créer un Compte
+                    </button>
+                </form>
+
+                
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let users = [];
+
+        function toggleTheme() {
+            document.body.classList.toggle('light');
+            document.body.classList.toggle('dark');
+            const icon = document.querySelector('.theme-toggle i');
+            if (document.body.classList.contains('dark')) {
+                icon.className = 'fas fa-moon';
+            } else {
+                icon.className = 'fas fa-sun';
+            }
+        }
+
+        function switchTab(tab) {
+            const tabs = document.querySelectorAll('.tab');
+            const forms = document.querySelectorAll('.form-container');
+            
+            tabs.forEach(t => t.classList.remove('active'));
+            forms.forEach(f => f.classList.remove('active'));
+            
+            if (tab === 'login') {
+                tabs[0].classList.add('active');
+                document.getElementById('login-form').classList.add('active');
+            } else {
+                tabs[1].classList.add('active');
+                document.getElementById('register-form').classList.add('active');
+            }
+            
+            hideMessage();
+        }
+
+        function showMessage(text, type) {
+            const messageEl = document.getElementById('message');
+            const icon = type === 'success' ? '<i class="fas fa-check-circle"></i>' : '<i class="fas fa-exclamation-circle"></i>';
+            messageEl.innerHTML = icon + text;
+            messageEl.className = `message ${type}`;
+            messageEl.style.display = 'flex';
+            
+            setTimeout(() => {
+                hideMessage();
+            }, 4000);
+        }
+
+        function hideMessage() {
+            const messageEl = document.getElementById('message');
+            messageEl.style.display = 'none';
+        }
+
+        function handleLogin(event) {
+            event.preventDefault();
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            
+            const user = users.find(u => u.email === email && u.password === password);
+            
+            if (user) {
+                showMessage(`Bienvenue ${user.name}! Connexion réussie`, 'success');
+                setTimeout(() => {
+                    event.target.reset();
+                    window.location.href = 'index.html';
+                }, 1500);
+            } else {
+                showMessage('Email ou mot de passe incorrect', 'error');
+            }
+        }
+
+        function handleRegister(event) {
+            event.preventDefault();
+            const name = document.getElementById('register-name').value;
+            const email = document.getElementById('register-email').value;
+            const password = document.getElementById('register-password').value;
+            const confirm = document.getElementById('register-confirm').value;
+            
+            if (password !== confirm) {
+                showMessage('Les mots de passe ne correspondent pas', 'error');
+                return;
+            }
+            
+            if (users.find(u => u.email === email)) {
+                showMessage('Cet email est déjà utilisé', 'error');
+                return;
+            }
+            
+            users.push({ name, email, password });
+            showMessage('Compte créé avec succès! Vous pouvez maintenant vous connecter', 'success');
+            
+            setTimeout(() => {
+                event.target.reset();
+                switchTab('login');
+            }, 1500);
+        }
+
+        function socialLogin(provider) {
+            showMessage(`Connexion avec ${provider}...`, 'success');
+        }
+    </script>
+</body>
+</html>
